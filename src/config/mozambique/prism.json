@@ -25,6 +25,7 @@
       "rainfall_amount": [
         "precip_blended_dekad",
         "rainfall_dekad",
+        "table_dekad_rainfall_historical_adm2",
         "rainfall_agg_1month",
         "rainfall_agg_3month",
         "rainfall_agg_6month",

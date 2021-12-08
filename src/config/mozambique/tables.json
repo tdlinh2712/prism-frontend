@@ -10,5 +10,17 @@
       "category": "Category_EN",
       "data": "Year"
     }
+  },
+  "table_dekad_rainfall_historical_adm2": {
+    "title": "Table: 10-day precipitation in mm by Admin 2",
+    "table": "../data/mozambique/tables/moz-r1h-adm2-transposed.csv",
+    "legend_text": "ODC extraction",
+    "chart": {
+      "type": "line",
+      "stacked": false,
+      "transpose": false,
+      "category": "Admin2_Code",
+      "data": "d1"
+    }
   }
 }
