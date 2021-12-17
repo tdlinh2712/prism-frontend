@@ -42,7 +42,9 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@turf/bbox": "^6.5.0",
+    "@turf/bbox-polygon": "^6.5.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "@types/dompurify": "^2.2.3",
     "@types/marked": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
@@ -132,6 +134,6 @@
     "eslint-import-resolver-typescript": "^2.0.0"
   },
   "engines": {
-    "node": "12.x"
+    "node": "14.x"
   }
 }

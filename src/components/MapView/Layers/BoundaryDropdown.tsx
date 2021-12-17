@@ -144,7 +144,7 @@ const getCategories = (
  * This component also syncs with the map automatically, allowing users to select cells by clicking the map.
  * Selection mode is automatically toggled based off this component's lifecycle.
  */
-function SimpleBoundaryDropdown({
+export function SimpleBoundaryDropdown({
   selectedBoundaries,
   setSelectedBoundaries,
   ...rest
