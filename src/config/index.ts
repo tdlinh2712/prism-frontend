@@ -97,7 +97,7 @@ const configMap = {
     appConfig: mozambiqueConfig,
     rawLayers: mozambiqueRawLayers,
     rawTables: mozambiqueRawTables,
-    defaultBoundariesFile: `${DEFAULT_BOUNDARIES_FOLDER}/moz_admin_boundaries.json`,
+    defaultBoundariesFile: `${DEFAULT_BOUNDARIES_FOLDER}/moz_admin_boundaries_WFP_CO_2022_02.json`,
   },
   myanmar: {
     appConfig: myanmarConfig,
