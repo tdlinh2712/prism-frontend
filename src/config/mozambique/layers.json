@@ -2353,5 +2353,37 @@
       }
     ],
     "legend_text": "Multidimensional Poverty Index. Source: Alkire, S., Kanagaratnam, U. and Suppa, N. (2020). ‘The Global Multidimensional Poverty Index (MPI) 2020’, OPHI MPI"
+  },
+  "ipc_phase_12_2020": {
+    "title": "IPC Phase classification (Oct-Dec 2020) ",
+    "type": "admin_level_data",
+    "path": "../data/mozambique/moz-ipc-2020-12.json",
+    "data_field": "overall_phase",
+    "admin_level": 2,
+    "admin_code": "ADM2_PCODE",
+    "opacity": 0.7,
+    "legend": [
+      {
+        "value": "1 - Minimal",
+        "color": "#CDFACD"
+      },
+      {
+        "value": "2 - Stressed",
+        "color": "#FAE61E" 
+      },
+      {
+        "value": "3 - Crisis",
+        "color": "#E67800" 
+      },
+      {
+        "value": "4 - Emergency",
+        "color": "#C80000" 
+      },
+      {
+        "value": "5 - Famine",
+        "color": "#640000" 
+      }
+    ],
+    "legend_text": "IPC phase classification October - December 2020. Source: National IPC Technical Working Group"
   }
 }

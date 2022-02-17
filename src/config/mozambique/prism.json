@@ -82,11 +82,11 @@
       "food_insecurity": [
         "ipc_phase_current",
         "ipc_phase_projected",
+        "ipc_phase_12_2020",
         "ipc_pop_ph3_current",
         "ipc_pop_ph3_projected",
         "ipc_perc_ph3_current",
-        "ipc_perc_ph3_projected"
-      ],
+        "ipc_perc_ph3_projected"      ],
       "poverty": [
         "mpi"
       ]
