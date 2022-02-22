@@ -115,6 +115,9 @@ def get_ews_responses(
 
         resp = requests.get(location_url)
         resp.raise_for_status()
-        return { 'values': [_['value'] for _ in resp.json()], **filtered_locations[0]}
+        return {
+            'values': [_['value'] for _ in resp.json()],
+            **filtered_locations[0]
+        }
     else:
         return locations
