@@ -24,6 +24,7 @@
     "categories": {
       "hazards": {
         "floods": [
+          "river_level",
           "hydra_s1",
           "hydra_s2",
           "hydra_l8"
