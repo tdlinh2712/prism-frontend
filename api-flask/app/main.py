@@ -8,6 +8,7 @@ from app.caching import cache_file, cache_geojson
 from app.database.alert_database import AlertsDataBase
 from app.database.alert_model import AlchemyEncoder, AlertModel
 from app.errors import handle_error, make_json_error
+from app.ews import get_ews_responses, parse_ews_params
 from app.kobo import get_form_responses, parse_datetime_params
 from app.timer import timed
 from app.validation import validate_intersect_parameter
@@ -158,6 +159,17 @@ def get_kobo_forms():
     """Get all form responses."""
     begin_datetime, end_datetime = parse_datetime_params()
     form_responses = get_form_responses(begin_datetime, end_datetime)
+
+    return Response(json.dumps(form_responses), mimetype='application/json')
+
+
+@app.route('/ews/data', methods=['GET'])
+def get_ews_data():
+    """Get cambodia EWS responses."""
+    only_dates, location_id, begin_datetime, end_datetime = parse_ews_params()
+    form_responses = get_ews_responses(
+        only_dates, location_id, begin_datetime, end_datetime
+    )
 
     return Response(json.dumps(form_responses), mimetype='application/json')
 
