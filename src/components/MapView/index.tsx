@@ -24,6 +24,8 @@ import type { Feature, MultiPolygon } from '@turf/helpers';
 import MapTooltip from './MapTooltip';
 import Legends from './Legends';
 import Download from './Download';
+import VisibilityButton from './Legends/VisibilityButton';
+import DataViewer from '../DataViewer';
 // layers
 import {
   AdminLevelDataLayer,
@@ -450,8 +452,14 @@ function MapView({ classes }: MapViewProps) {
         </Grid>
         <Grid item>
           <Grid container spacing={1}>
-            <Download />
-            <Legends layers={selectedLayers} extent={adminBoundariesExtent} />
+            <Grid item>
+              <Grid container spacing={1} justify="flex-end">
+                <Download />
+                <VisibilityButton />
+              </Grid>
+              <DataViewer />
+              <Legends layers={selectedLayers} extent={adminBoundariesExtent} />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

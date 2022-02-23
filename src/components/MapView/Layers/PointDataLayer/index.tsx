@@ -14,7 +14,11 @@ import {
 import { layerDataSelector } from '../../../../context/mapStateSlice/selectors';
 import { useDefaultDate } from '../../../../utils/useDefaultDate';
 import { getFeatureInfoPropsData } from '../../utils';
-import { getBoundaryLayerSingleton } from '../../../../config/utils';
+import { TableRowType } from '../../../../context/tableStateSlice';
+import {
+  addEwsDataset,
+  addPointTitle,
+} from '../../../../context/chartDataStateSlice';
 
 // Point Data, takes any GeoJSON of points and shows it.
 function PointDataLayer({ layer }: { layer: PointDataLayerProps }) {
@@ -39,42 +43,52 @@ function PointDataLayer({ layer }: { layer: PointDataLayerProps }) {
 
   const circleLayout: MapboxGL.CircleLayout = { visibility: 'visible' };
   const circlePaint: MapboxGL.CirclePaint = {
+    'circle-radius': 8,
     'circle-opacity': layer.opacity || 0.3,
     'circle-color': {
       property: layer.measure,
       stops: legendToStops(layer.legend),
     },
   };
-  const boundaryId = getBoundaryLayerSingleton().id;
+
+  const onHoverHandler = (evt: any) => {
+    const measure = get(
+      evt.features[0],
+      `properties.${layer.measure}`,
+      'No data',
+    );
+
+    // by default add `measure` to the tooltip
+    dispatch(
+      addPopupData({
+        [layer.title]: {
+          data: measure,
+          coordinates: evt.lngLat,
+        },
+      }),
+    );
+
+    // then add feature_info_props as extra fields to the tooltip
+    dispatch(
+      addPopupData(getFeatureInfoPropsData(layer.featureInfoProps || {}, evt)),
+    );
+  };
+
+  const onClickHandler = (evt: any) => {
+    const { properties } = evt.features[0];
+    const { id } = properties;
+    dispatch(addPointTitle(id));
+    // dispatch(addEwsDataset({ rows, columns }));
+  };
 
   return (
     <GeoJSONLayer
-      before={`layer-${boundaryId}-line`}
       id={`layer-${layer.id}`}
       data={data}
       circleLayout={circleLayout}
       circlePaint={circlePaint}
-      circleOnClick={async (evt: any) => {
-        // by default add `measure` to the tooltip
-        dispatch(
-          addPopupData({
-            [layer.title]: {
-              data: get(
-                evt.features[0],
-                `properties.${layer.measure}`,
-                'No Data',
-              ),
-              coordinates: evt.lngLat,
-            },
-          }),
-        );
-        // then add feature_info_props as extra fields to the tooltip
-        dispatch(
-          addPopupData(
-            getFeatureInfoPropsData(layer.featureInfoProps || {}, evt),
-          ),
-        );
-      }}
+      circleOnMouseMove={onHoverHandler}
+      circleOnClick={onClickHandler}
     />
   );
 }

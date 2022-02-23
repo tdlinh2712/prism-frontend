@@ -92,7 +92,7 @@ def get_ews_responses(
             'id': properties['id'],
             'external_id': properties['external_id'],
             'name': properties['name'],
-            'is_available': is_active and is_operational,
+            'is_available': 1 if is_active and is_operational else 0,
             'water_height': properties['water_height'],
             'watch_level': trigger_levels['watch_level'],
             'warning': trigger_levels['warning'],

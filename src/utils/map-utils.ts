@@ -56,12 +56,16 @@ export function boundariesOnView(
 }
 
 export function onlyBoundaryLayerUnderCursor(
-  map: MapBoxMap,
+  map: MapBoxMap | undefined,
   point: [number, number],
 ) {
-  const features = map.queryRenderedFeatures(point);
-  const nonBoundaryLayerFeatures = features.filter(f =>
-    f.source.includes(LAYER_NAME_PREFIX),
-  );
-  return nonBoundaryLayerFeatures.length === 0;
+  const boundaryIds = getBoundaryLayers().map(l => l.id.toString());
+  const features = map?.queryRenderedFeatures(point);
+  const nonBoundaryLayerFeatures = features
+    ?.filter(feat => feat.source.includes(LAYER_NAME_PREFIX))
+    .filter(f => {
+      const id = f.source.split(LAYER_NAME_PREFIX)[1];
+      return !boundaryIds.includes(id);
+    });
+  return nonBoundaryLayerFeatures?.length === 0;
 }

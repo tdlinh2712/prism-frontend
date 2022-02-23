@@ -9,7 +9,7 @@ import { LayerData } from '../../../../context/layers/layer-data';
 import {
   loadDataset,
   DatasetParams,
-} from '../../../../context/layers/boundary';
+} from '../../../../context/chartDataStateSlice';
 import {
   mapSelector,
   layerDataSelector,
@@ -54,6 +54,13 @@ function BoundaryLayer({ layer }: { layer: BoundaryLayerProps }) {
   const onClickFunc = (evt: any) => {
     const { properties } = evt.features[0];
 
+    // Since `event` is propagated on all layers we need to
+    // Only allow click on boundary layer under cursor point on the map
+    // This allows other layers to handle click event without interference
+    if (!onlyBoundaryLayerUnderCursor(map, evt)) {
+      return;
+    }
+
     // send the selection to the map selection layer. No-op if selection mode isn't on.
     dispatch(
       toggleSelectedBoundary(evt.features[0].properties[layer.adminCode]),
@@ -93,19 +100,7 @@ function BoundaryLayer({ layer }: { layer: BoundaryLayerProps }) {
       linePaint={layer.styles.line}
       fillOnMouseMove={fillOnMouseEnter}
       fillOnMouseLeave={fillOnMouseLeave}
-      fillOnClick={
-        layer.id === 'admin_boundaries'
-          ? (evt: any) => {
-              if (!map) {
-                return;
-              }
-
-              if (onlyBoundaryLayerUnderCursor(map, evt.point)) {
-                onClickFunc(evt);
-              }
-            }
-          : undefined
-      }
+      fillOnClick={fillOnClick}
     />
   );
 }
