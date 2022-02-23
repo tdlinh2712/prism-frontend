@@ -4,6 +4,7 @@ import { get } from 'lodash';
 import * as MapboxGL from 'mapbox-gl';
 import { useDispatch, useSelector } from 'react-redux';
 import { legendToStops } from '../layer-utils';
+import { onToggleHover } from '../../../../utils/map-utils';
 import { PointDataLayerProps } from '../../../../config/types';
 
 import { addPopupData } from '../../../../context/tooltipStateSlice';
@@ -14,9 +15,10 @@ import {
 import { layerDataSelector } from '../../../../context/mapStateSlice/selectors';
 import { useDefaultDate } from '../../../../utils/useDefaultDate';
 import { getFeatureInfoPropsData } from '../../utils';
-import { TableRowType } from '../../../../context/tableStateSlice';
 import {
-  addEwsDataset,
+  loadEwsDataset,
+  clearDataset,
+  EwsDatasetParams,
   addPointTitle,
 } from '../../../../context/chartDataStateSlice';
 
@@ -58,6 +60,8 @@ function PointDataLayer({ layer }: { layer: PointDataLayerProps }) {
       'No data',
     );
 
+    onToggleHover('pointer', evt.target);
+
     // by default add `measure` to the tooltip
     dispatch(
       addPopupData({
@@ -75,10 +79,28 @@ function PointDataLayer({ layer }: { layer: PointDataLayerProps }) {
   };
 
   const onClickHandler = (evt: any) => {
+    // clear previous table dataset loaded first
+    dispatch(clearDataset());
     const { properties } = evt.features[0];
-    const { id } = properties;
-    dispatch(addPointTitle(id));
-    // dispatch(addEwsDataset({ rows, columns }));
+
+    const isAvailable = get(properties, 'is_available');
+    if (!isAvailable) {
+      onToggleHover('not-allowed', evt.target);
+      return;
+    }
+
+    const externalId = get(properties, 'external_id');
+    const name = get(properties, 'name');
+    const title = `River Level - ${name} (${externalId})`;
+
+    const params: EwsDatasetParams = {
+      id: get(properties, 'id'),
+      start: get(properties, 'start_date'),
+      end: get(properties, 'start_date'),
+    };
+
+    dispatch(addPointTitle(title));
+    dispatch(loadEwsDataset(params));
   };
 
   return (

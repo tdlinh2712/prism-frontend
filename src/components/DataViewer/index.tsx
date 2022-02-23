@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   createStyles,
   Theme,
@@ -8,11 +8,14 @@ import {
   WithStyles,
   withStyles,
   IconButton,
+  CircularProgress,
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import {
   DatasetSelector,
   PointTitleSelector,
+  loadingDatasetSelector,
+  clearDataset,
 } from '../../context/chartDataStateSlice';
 import Chart from '../DataDrawer/Chart';
 import { ChartConfig } from '../../config/types';
@@ -20,23 +23,15 @@ import { isLoading } from '../../context/mapStateSlice/selectors';
 import { isLoading as areDatesLoading } from '../../context/serverStateSlice';
 
 function DataViewer({ classes }: DatasetProps) {
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
   const layersLoading = useSelector(isLoading);
   const datesLoading = useSelector(areDatesLoading);
   const loading = layersLoading || datesLoading;
+  const isDatasetLoading = useSelector(loadingDatasetSelector);
 
   const dataset = useSelector(DatasetSelector);
   const title = useSelector(PointTitleSelector);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (dataset) {
-      setOpen(true);
-    }
-  }, [dataset]);
-
-  if (!dataset) {
-    return null;
-  }
 
   const config: ChartConfig = {
     type: 'line',
@@ -45,15 +40,30 @@ function DataViewer({ classes }: DatasetProps) {
     category: 'Admin2_Code',
   };
 
+  useEffect(() => {
+    if (loading) {
+      dispatch(clearDataset());
+    }
+    if (isDatasetLoading || dataset) {
+      setOpen(!loading);
+    }
+  }, [dispatch, dataset, isDatasetLoading, loading]);
+
   return (
     <>
-      {open && !loading && (
+      {open && (
         <Grid item className={classes.container}>
           <Paper className={classes.paper}>
             <IconButton size="small" onClick={() => setOpen(false)}>
               <Close fontSize="small" />
             </IconButton>
-            <Chart title={title || ''} config={config} data={dataset} />
+            {dataset ? (
+              <Chart title={title || ''} config={config} data={dataset} />
+            ) : (
+              <div className={classes.loading}>
+                <CircularProgress size={50} />
+              </div>
+            )}
           </Paper>
         </Grid>
       )}
@@ -73,6 +83,13 @@ const styles = (theme: Theme) =>
     },
     title: {
       color: theme.palette.text.secondary,
+    },
+    loading: {
+      height: 240,
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
 

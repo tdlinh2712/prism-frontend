@@ -69,3 +69,8 @@ export function onlyBoundaryLayerUnderCursor(
     });
   return nonBoundaryLayerFeatures?.length === 0;
 }
+
+export function onToggleHover(cursor: string, targetMap: MapBoxMap) {
+  // eslint-disable-next-line no-param-reassign, fp/no-mutation
+  targetMap.getCanvas().style.cursor = cursor;
+}

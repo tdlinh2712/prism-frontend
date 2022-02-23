@@ -23,7 +23,7 @@ function getChartConfig(stacked: boolean, title: string) {
       fontColor: '#CCC',
       display: true,
       text: title,
-      fontSize: 20,
+      fontSize: 16,
     },
     scales: {
       xAxes: [
@@ -34,6 +34,7 @@ function getChartConfig(stacked: boolean, title: string) {
           },
           ticks: {
             fontColor: '#CCC',
+            fontSize: 9,
           },
         },
       ],
@@ -41,6 +42,7 @@ function getChartConfig(stacked: boolean, title: string) {
         {
           ticks: {
             fontColor: '#CCC',
+            fontSize: 9,
           },
           stacked,
           gridLines: {
@@ -83,7 +85,6 @@ function formatChartData(data: TableData, config: ChartConfig) {
    *               using config.transpose = true.
    *  - fill
    */
-
   const transpose = config.transpose || false;
   const header = data.rows[0];
   const tableRows = data.rows.slice(1, data.rows.length);
@@ -110,20 +111,34 @@ function formatChartData(data: TableData, config: ChartConfig) {
     : tableRows.map(row => row[config.category]);
 
   const datasets = !transpose
-    ? tableRows.map((row, i) => ({
-        label: (row[config.category] as string) || '',
-        fill: config.fill || false,
-        backgroundColor: colors[i],
-        borderColor: colors[i],
-        borderWidth: 2,
-        data: indices.map(index => (row[index] as number) || null),
-      }))
+    ? tableRows.map((row, i) => {
+        // Unique check to change appearence of baselines
+        // to show water levels in Cambodia EWS
+        const hasLevel = 'levels' in row;
+        const isWarning = hasLevel && row.levels === 'Warning';
+        const isSevere = hasLevel && row.levels === 'Severe Warning';
+        const levelColors = (isWarning && '#fdae6b') || (isSevere && '#e34a33');
+
+        return {
+          label:
+            (row[config.category] as string) ||
+            (hasLevel && (row.levels as string).replace('_', ' ')) ||
+            '',
+          fill: config.fill || false,
+          backgroundColor: levelColors || colors[i],
+          borderColor: levelColors || colors[i],
+          borderWidth: isWarning || isSevere ? 2 : 1,
+          pointRadius: isWarning || isSevere ? 0 : 1,
+          data: indices.map(index => (row[index] as number) || null),
+        };
+      })
     : indices.map((index, i) => ({
         label: header[index] as string,
         fill: config.fill || false,
         backgroundColor: colors[i],
         borderColor: colors[i],
-        borderWidth: 2,
+        borderWidth: 1,
+        pointRadius: 1,
         data: tableRows.map(row => (row[index] as number) || null),
       }));
 

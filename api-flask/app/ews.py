@@ -97,6 +97,8 @@ def get_ews_responses(
             'watch_level': trigger_levels['watch_level'],
             'warning': trigger_levels['warning'],
             'severe_warning': trigger_levels['severe_warning'],
+            'start_date': start_date,
+            'end_date': end_date
         }
 
     locations = list(map(format_details, features))
@@ -115,9 +117,25 @@ def get_ews_responses(
 
         resp = requests.get(location_url)
         resp.raise_for_status()
-        return {
-            'values': [_['value'] for _ in resp.json()],
-            **filtered_locations[0]
-        }
+
+        format = '%d/%m/%Y %H:%M'
+        rows = list()
+        dates = {'levels': 'River Level'}
+        values = {'levels': 'Current'}
+        warning_values = {'levels': 'Warning'}
+        severe_values = {'levels': 'Severe Warning'}
+        for index, item in enumerate(resp.json()):
+            date_val = datetime.strptime(item['value'][0], '%Y-%m-%dT%H:%M:%S')
+            dates[str(index)] = date_val.strftime(format)
+            values[str(index)] = item['value'][1]
+            warning_values[str(index)] = filtered_locations[0]['warning']
+            severe_values[str(index)] = filtered_locations[0]['severe_warning']
+
+        columns = list(dates.keys())
+        rows.append(dates)
+        rows.append(values)
+        rows.append(warning_values)
+        rows.append(severe_values)
+        return {'rows': rows, 'columns': columns}
     else:
         return locations
