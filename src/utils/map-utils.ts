@@ -3,6 +3,8 @@ import { LayerKey, BoundaryLayerProps, LayerType } from '../config/types';
 import { getBoundaryLayers } from '../config/utils';
 import { addLayer, removeLayer } from '../context/mapStateSlice';
 
+const LAYER_NAME_PREFIX = 'layer-';
+
 /**
  * Checks weither given layer is on view
  * @param map the MapBox Map object
@@ -12,7 +14,7 @@ export function isLayerOnView(map: MapBoxMap | undefined, layerId: LayerKey) {
   return map
     ?.getStyle()
     .layers?.map(l => l.source)
-    .includes(`layer-${layerId}`);
+    .includes(`${LAYER_NAME_PREFIX}${layerId}`);
 }
 
 export function safeDispatchAddLayer(
@@ -46,9 +48,20 @@ export function boundariesOnView(
   const onViewLayerKeys = map
     ?.getStyle()
     .layers?.map(l => l.source)
-    .filter(s => s && s.toString().includes('layer-'))
-    .map(k => k && k.toString().split('layer-')[1]);
+    .filter(s => s && s.toString().includes(LAYER_NAME_PREFIX))
+    .map(k => k && k.toString().split(LAYER_NAME_PREFIX)[1]);
   return boundaries.filter(
     b => onViewLayerKeys && onViewLayerKeys.includes(b.id),
   );
+}
+
+export function onlyBoundaryLayerUnderCursor(
+  map: MapBoxMap,
+  point: [number, number],
+) {
+  const features = map.queryRenderedFeatures(point);
+  const nonBoundaryLayerFeatures = features.filter(f =>
+    f.source.includes(LAYER_NAME_PREFIX),
+  );
+  return nonBoundaryLayerFeatures.length === 0;
 }

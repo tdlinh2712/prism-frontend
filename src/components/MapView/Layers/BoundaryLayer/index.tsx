@@ -10,9 +10,13 @@ import {
   loadDataset,
   DatasetParams,
 } from '../../../../context/layers/boundary';
-import { layerDataSelector } from '../../../../context/mapStateSlice/selectors';
+import {
+  mapSelector,
+  layerDataSelector,
+} from '../../../../context/mapStateSlice/selectors';
 import { toggleSelectedBoundary } from '../../../../context/mapSelectionLayerStateSlice';
 import { isPrimaryBoundaryLayer } from '../../../../config/utils';
+import { onlyBoundaryLayerUnderCursor } from '../../../../utils/map-utils';
 
 function onToggleHover(cursor: string, targetMap: MapboxGL.Map) {
   // eslint-disable-next-line no-param-reassign, fp/no-mutation
@@ -21,6 +25,7 @@ function onToggleHover(cursor: string, targetMap: MapboxGL.Map) {
 
 function BoundaryLayer({ layer }: { layer: BoundaryLayerProps }) {
   const dispatch = useDispatch();
+  const map = useSelector(mapSelector);
   const boundaryLayer = useSelector(layerDataSelector(layer.id)) as
     | LayerData<BoundaryLayerProps>
     | undefined;
@@ -88,7 +93,19 @@ function BoundaryLayer({ layer }: { layer: BoundaryLayerProps }) {
       linePaint={layer.styles.line}
       fillOnMouseMove={fillOnMouseEnter}
       fillOnMouseLeave={fillOnMouseLeave}
-      fillOnClick={fillOnClick}
+      fillOnClick={
+        layer.id === 'admin_boundaries'
+          ? (evt: any) => {
+              if (!map) {
+                return;
+              }
+
+              if (onlyBoundaryLayerUnderCursor(map, evt.point)) {
+                onClickFunc(evt);
+              }
+            }
+          : undefined
+      }
     />
   );
 }
