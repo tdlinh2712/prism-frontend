@@ -64,9 +64,16 @@ export const loadEwsDataset = createAsyncThunk<
   // Dataset object are not ordered sort dates
   const sortedRows = rows.map((row: TableRowType, index: number) => {
     if (index === 0) {
+      const formattedRow: { [k: string]: string | number } = Object.assign(
+        {},
+        ...Object.entries(row).map(([k, v]) => ({
+          [k]: moment(v).local().format('DD/MM/YYYY HH:mm'),
+        })),
+      );
+
       return Object.fromEntries(
         /* eslint-disable fp/no-mutating-methods */
-        Object.entries(row).sort(
+        Object.entries(formattedRow).sort(
           ([, a], [, b]) => new Date(a).getTime() - new Date(b).getTime(),
         ),
       );
