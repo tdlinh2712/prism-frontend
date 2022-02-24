@@ -125,8 +125,9 @@ def get_ews_responses(
         warning_values = {'levels': 'Warning'}
         severe_values = {'levels': 'Severe Warning'}
         for index, item in enumerate(resp.json()):
-            date_val = datetime.strptime(item['value'][0], '%Y-%m-%dT%H:%M:%S')
-            dates[str(index)] = date_val.strftime(format)
+            ict_tz = timezone(timedelta(hours=7))
+            local_date = dtparser(item['value'][0]).replace(tzinfo=ict_tz)
+            dates[str(index)] = local_date
             values[str(index)] = item['value'][1]
             warning_values[str(index)] = filtered_locations[0]['warning']
             severe_values[str(index)] = filtered_locations[0]['severe_warning']
